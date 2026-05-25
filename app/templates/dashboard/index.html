@@ -46,6 +46,12 @@
                         <a href="/contacts/{{ contact.id }}/topics">
                             <button type="button">Configurar Mensajes</button>
                         </a>
+                        <a href="/contacts/{{ contact.id }}/chat">
+                            <button type="button">Simular Chat</button>
+                        </a>
+                        <a href="/contacts/{{ contact.id }}/report">
+                            <button type="button">Ver Reporte</button>
+                        </a>
                         <form action="/contacts/{{ contact.id }}/delete" method="POST" style="display: inline;">
                             <button type="submit" style="color: red;" onclick="return confirm('¿Estás seguro de que quieres eliminar a este contacto?');">
                                 Eliminar
