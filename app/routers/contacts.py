@@ -13,8 +13,8 @@ from app.dependencies import get_db, get_current_user
 router = APIRouter(prefix="/contacts", tags=["contacts"])
 templates = Jinja2Templates(directory="app/templates")
 
-@router.post("/add", response_class=HTMLResponse)
-def add_new_contact(
+@router.post("/", response_class=HTMLResponse)
+def add_contact(
     request: Request,
     contact: Annotated[ContactCreate, Form()],
     db: Session = Depends(get_db),
@@ -27,7 +27,7 @@ def add_new_contact(
 
     return RedirectResponse(url="/dashboard", status_code=303)
 
-@router.get("/edit/{contact_id}", response_class=HTMLResponse)
+@router.get("/{contact_id}/edit", response_class=HTMLResponse)
 def get_edit_contact_page(
     request: Request,
     contact_id: int,
@@ -47,7 +47,7 @@ def get_edit_contact_page(
         context={"request": request, "contact": contact}
     )
 
-@router.post("/edit/{contact_id}", response_class=HTMLResponse)
+@router.post("/{contact_id}/edit", response_class=HTMLResponse)
 def edit_contact(
     request: Request,
     contact_id: int,
@@ -62,7 +62,7 @@ def edit_contact(
     
     return RedirectResponse(url="/dashboard", status_code=303)
 
-@router.post("/delete/{contact_id}", response_class=HTMLResponse)
+@router.post("/{contact_id}/delete", response_class=HTMLResponse)
 def delete_existing_contact(
     contact_id: int,
     db: Session = Depends(get_db),
