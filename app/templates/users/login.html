@@ -3,26 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registro - CAMI</title>
+    <title>Login - CAMI</title>
 </head>
 <body>
     <div>
         <div>
-            <h1>REGISTRO C.A.M.I</h1>
-            <h2>Crear una cuenta</h2>
+            <h1>LOGIN C.A.M.I</h1>
+            <h2>Ingresar a tu cuenta</h2>
 
             {% if error %}
                 <div style="color: red">
-                    <strong>Error: </strong> {{ error }}
+                    <strong>Error:</strong> {{ error }}
                 </div>
             {% endif %}
 
-            <form action="/users/signup" method="POST">
-                <div>
-                    <label for="full_name">Nombre completo</label>
-                    <input type="text" id="full_name" name="full_name" required>
-                </div>
-
+            <form action="/users/login" method="POST">
                 <div>
                     <label for="email">Correo electrónico</label>
                     <input type="email" id="email" name="email" required>
@@ -34,10 +29,10 @@
                 </div>
 
                 <button type="submit">
-                    Registrarse
+                    Ingresar
                 </button>
             </form>
-            <p>¿Ya tienes cuenta? <a href="/users/login">Ingresa aquí</a></p>
+            <p>¿No tienes cuenta? <a href="/users/signup">Regístrate aquí</a></p>
         </div>
     </div>
 </body>

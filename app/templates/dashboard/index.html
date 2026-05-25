@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - CAMI</title>
+</head>
+<body>
+    <div>
+        <h1>Dashboard C.A.M.I</h1>
+        <h2>¡Bienvenido, {{ user.full_name }}!</h2>
+        <p>Correo: <strong>{{ user.email }}</strong></p>
+
+        <h3>Tus Contactos</h3>
+        <p><em>Aún no tienes contactos registrados.</em></p>
+
+        <a href="/users/logout">Cerrar sesión</a>
+    </div>
+</body>
+</html>
