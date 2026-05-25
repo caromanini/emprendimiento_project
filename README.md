@@ -35,6 +35,8 @@ Se requiere PostgreSQL instalado de manera local, yo estoy usando la versión `1
 
 ```
 DATABASE_URL=postgresql://postgres:contraseña@localhost:5432/nombre_base_de_datos
+SECRET_KEY=tu_secret_key_aqui
+GEMINI_API_KEY=tu_gemini_api_key_aqui
 ```
 
 6. Ejecutar la aplicación:
