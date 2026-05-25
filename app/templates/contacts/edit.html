@@ -10,7 +10,7 @@
         <h1>Editar Contacto</h1>
         <hr>
         
-        <form action="/contacts/edit/{{ contact.id }}" method="POST">
+        <form action="/contacts/{{ contact.id }}/edit" method="POST">
             <div>
                 <label for="full_name">Nombre del adulto mayor:</label>
                 <input type="text" id="full_name" name="full_name" value="{{ contact.full_name }}" required>

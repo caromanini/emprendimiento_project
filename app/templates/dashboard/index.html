@@ -12,7 +12,7 @@
         <p>Correo: <strong>{{ user.email }}</strong></p>
 
         <h3>Registrar nuevo Contacto</h3>
-        <form action="/contacts/add", method="POST">
+        <form action="/contacts/", method="POST">
             <div>
                 <label for="full_name">Nombre del contacto:</label>
                 <input type="text" id="full_name" name="full_name" required>
@@ -40,10 +40,19 @@
                 {% for contact in contacts %}
                     <li>
                         <strong>{{ contact.full_name }}</strong> - Tel: {{ contact.phone_number }}
-                        <a href="/contacts/edit/{{ contact.id }}">
+                        <a href="/contacts/{{ contact.id }}/edit">
                             <button type="button">Editar</button>
                         </a>
-                        <form action="/contacts/delete/{{ contact.id }}" method="POST" style="display: inline;">
+                        <a href="/contacts/{{ contact.id }}/topics">
+                            <button type="button">Configurar Mensajes</button>
+                        </a>
+                        <a href="/contacts/{{ contact.id }}/chat">
+                            <button type="button">Simular Chat</button>
+                        </a>
+                        <a href="/contacts/{{ contact.id }}/report">
+                            <button type="button">Ver Reporte</button>
+                        </a>
+                        <form action="/contacts/{{ contact.id }}/delete" method="POST" style="display: inline;">
                             <button type="submit" style="color: red;" onclick="return confirm('¿Estás seguro de que quieres eliminar a este contacto?');">
                                 Eliminar
                             </button>

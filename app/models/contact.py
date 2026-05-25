@@ -11,3 +11,9 @@ class Contact(Base):
     user_id = Column(Integer, ForeignKey("users.id"))
 
     guardian = relationship("User", back_populates="contacts")
+    messages = relationship(
+        "Message", back_populates="contact", cascade="all, delete-orphan"
+    )
+    topics = relationship(
+        "Topic", back_populates="contact", cascade="all, delete-orphan"
+    )
