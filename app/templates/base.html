@@ -5,9 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}C.A.M.I.{% endblock %}</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     {% block extra_head %}{% endblock %}
 </head>
-<body class="{% block body_class %}{% endblock %}">
+<body class="{% block body_class %}bg-slate-50 min-h-screen font-sans{% endblock %}">
+    {% block nav %}
+    <nav class="bg-teal-800 text-white px-6 py-4 flex items-center justify-between shadow-md">
+        <span class="text-xl font-bold tracking-tight">C.A.M.I</span>
+        <div class="flex items-center gap-4 text-sm">
+            <a href="/dashboard" class="hover:text-pink-300 transition-colors">Dashboard</a>
+            <a href="/users/logout" class="bg-pink-400 hover:bg-pink-300 text-white px-4 py-1.5 rounded-full font-medium transition-colors">Salir</a>
+        </div>
+    </nav>
+    {% endblock %}
     {% block content %}{% endblock %}
 </body>
 </html>

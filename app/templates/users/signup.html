@@ -2,39 +2,71 @@
 
 {% block title %}Registro - CAMI{% endblock %}
 
+{% block nav %}{% endblock %}
+
+{% block body_class %}bg-gradient-to-br from-teal-900 via-teal-800 to-teal-700 min-h-screen font-sans flex items-center justify-center px-4 py-8{% endblock %}
+
 {% block content %}
-<div>
-    <div>
-        <h1>REGISTRO C.A.M.I</h1>
-        <h2>Crear una cuenta</h2>
+<div class="w-full max-w-md">
+
+    <div class="text-center mb-8">
+        <div class="inline-flex items-center justify-center w-16 h-16 bg-white/10 rounded-2xl mb-4">
+            <svg class="w-8 h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+            </svg>
+        </div>
+        <h1 class="text-3xl font-bold text-white tracking-tight">C.A.M.I.</h1>
+        <p class="text-teal-200 text-sm mt-1">Cuidado Adulto Mayor Interactivo</p>
+    </div>
+
+    <div class="bg-white rounded-2xl shadow-2xl p-8">
+        <h2 class="text-xl font-semibold text-slate-800 mb-1">Crear una cuenta</h2>
+        <p class="text-slate-400 text-sm mb-6">Comenzá a cuidar a tus seres queridos</p>
 
         {% if error %}
-            <div style="color: red">
-                <strong>Error: </strong> {{ error }}
-            </div>
+        <div class="bg-red-50 border border-red-200 text-red-700 rounded-xl px-4 py-3 text-sm mb-5">
+            <strong>Error:</strong> {{ error }}
+        </div>
         {% endif %}
 
-        <form action="/users/signup" method="POST">
+        <form action="/users/signup" method="POST" class="space-y-4">
             <div>
-                <label for="full_name">Nombre completo</label>
-                <input type="text" id="full_name" name="full_name" required>
+                <label for="full_name" class="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1">
+                    Nombre completo
+                </label>
+                <input type="text" id="full_name" name="full_name" required placeholder="Tu nombre"
+                    class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-teal-400 focus:border-transparent transition">
             </div>
 
             <div>
-                <label for="email">Correo electrónico</label>
-                <input type="email" id="email" name="email" required>
+                <label for="email" class="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1">
+                    Correo electrónico
+                </label>
+                <input type="email" id="email" name="email" required placeholder="tu@correo.com"
+                    class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-teal-400 focus:border-transparent transition">
             </div>
 
             <div>
-                <label for="password">Contraseña</label>
-                <input type="password" id="password" name="password" required>
+                <label for="password" class="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1">
+                    Contraseña
+                </label>
+                <input type="password" id="password" name="password" required placeholder="••••••••"
+                    class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-teal-400 focus:border-transparent transition">
             </div>
 
-            <button type="submit">
-                Registrarse
+            <button type="submit"
+                class="w-full bg-pink-400 hover:bg-pink-300 text-white py-2.5 rounded-xl font-semibold text-sm transition-colors cursor-pointer">
+                Crear cuenta
             </button>
         </form>
-        <p>¿Ya tienes cuenta? <a href="/users/login">Ingresa aquí</a></p>
+
+        <p class="text-center text-sm text-slate-500 mt-6">
+            ¿Ya tienes cuenta?
+            <a href="/users/login" class="text-teal-700 font-semibold hover:text-teal-500 transition-colors">
+                Ingresa aquí
+            </a>
+        </p>
     </div>
 </div>
 {% endblock %}
