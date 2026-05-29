@@ -17,3 +17,6 @@ class Contact(Base):
     topics = relationship(
         "Topic", back_populates="contact", cascade="all, delete-orphan"
     )
+    daily_reports = relationship(
+        "DailyReport", back_populates="contact", cascade="all, delete-orphan"
+    )
