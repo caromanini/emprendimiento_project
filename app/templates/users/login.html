@@ -1,39 +1,35 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - CAMI</title>
-</head>
-<body>
+{% extends "base.html" %}
+
+{% block title %}Login - CAMI{% endblock %}
+
+{% block content %}
+<div>
     <div>
-        <div>
-            <h1>LOGIN C.A.M.I</h1>
-            <h2>Ingresar a tu cuenta</h2>
+        <h1>LOGIN C.A.M.I</h1>
+        <h2>Ingresar a tu cuenta</h2>
 
-            {% if error %}
-                <div style="color: red">
-                    <strong>Error:</strong> {{ error }}
-                </div>
-            {% endif %}
+        {% if error %}
+            <div style="color: red">
+                <strong>Error:</strong> {{ error }}
+            </div>
+        {% endif %}
 
-            <form action="/users/login" method="POST">
-                <div>
-                    <label for="email">Correo electrónico</label>
-                    <input type="email" id="email" name="email" required>
-                </div>
+        <form action="/users/login" method="POST">
+            <div>
+                <label for="email">Correo electrónico</label>
+                <input type="email" id="email" name="email" required>
+            </div>
 
-                <div>
-                    <label for="password">Contraseña</label>
-                    <input type="password" id="password" name="password" required>
-                </div>
+            <div>
+                <label for="password">Contraseña</label>
+                <input type="password" id="password" name="password" required>
+            </div>
 
-                <button type="submit">
-                    Ingresar
-                </button>
-            </form>
-            <p>¿No tienes cuenta? <a href="/users/signup">Regístrate aquí</a></p>
-        </div>
+            <button type="submit">
+                Ingresar
+            </button>
+        </form>
+        <p>¿No tienes cuenta? <a href="/users/signup">Regístrate aquí</a></p>
     </div>
-</body>
-</html>
+</div>
+{% endblock %}

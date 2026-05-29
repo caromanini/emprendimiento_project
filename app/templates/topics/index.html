@@ -1,55 +1,51 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Configurar IA - CAMI</title>
-</head>
-<body>
-    <div>
-        <h1>Configuración del Bot</h1>
-        <h2>Adulto Mayor: {{ contact.full_name }}</h2>
-        <a href="/dashboard">← Volver al Dashboard</a>
-        <hr>
+{% extends "base.html" %}
 
-        <h3>Agregar nueva pregunta/tópico</h3>
-        <form action="/contacts/{{ contact.id }}/topics" method="POST">
-            <div>
-                <label for="title">Título corto (Ej. "Pastillas"):</label><br>
-                <input type="text" id="title" name="title" required>
-            </div>
-            <br>
-            <div>
-                <label for="instruction">Instrucción para la IA:</label><br>
-                <textarea id="instruction" name="instruction" rows="3" cols="50" placeholder="Ej: Pregúntale si se tomó la pastilla azul para la presión de las 9:00 AM." required></textarea>
-            </div>
-            <br>
-            <button type="submit">Agregar a la rutina</button>
-        </form>
+{% block title %}Configurar IA - CAMI{% endblock %}
 
-        <hr>
+{% block content %}
+<div>
+    <h1>Configuración del Bot</h1>
+    <h2>Adulto Mayor: {{ contact.full_name }}</h2>
+    <a href="/dashboard">← Volver al Dashboard</a>
+    <hr>
 
-        <h3>Rutina Actual</h3>
-        {% if topics %}
-            <ul>
-                {% for topic in topics %}
-                    <li style="margin-bottom: 15px;">
-                        <strong>{{ topic.title }}</strong><br>
-                        <em>Instrucción: {{ topic.instruction }}</em><br>
+    <h3>Agregar nueva pregunta/tópico</h3>
+    <form action="/contacts/{{ contact.id }}/topics" method="POST">
+        <div>
+            <label for="title">Título corto (Ej. "Pastillas"):</label><br>
+            <input type="text" id="title" name="title" required>
+        </div>
+        <br>
+        <div>
+            <label for="instruction">Instrucción para la IA:</label><br>
+            <textarea id="instruction" name="instruction" rows="3" cols="50" placeholder="Ej: Pregúntale si se tomó la pastilla azul para la presión de las 9:00 AM." required></textarea>
+        </div>
+        <br>
+        <button type="submit">Agregar a la rutina</button>
+    </form>
 
-                        <a href="/contacts/{{ contact.id }}/topics/{{ topic.id }}/edit">
-                            <button type="button">Editar</button>
-                        </a>
-                        
-                        <form action="/contacts/{{ contact.id }}/topics/{{ topic.id }}/delete" method="POST" style="display: inline; margin-top: 5px;">
-                            <button type="submit" style="color: red; font-size: 0.8em;" onclick="return confirm('¿Eliminar este tópico de la rutina?');">Eliminar</button>
-                        </form>
-                    </li>
-                {% endfor %}
-            </ul>
-        {% else %}
-            <p>Aún no has configurado preguntas. El bot solo conversará libremente.</p>
-        {% endif %}
-    </div>
-</body>
-</html>
+    <hr>
+
+    <h3>Rutina Actual</h3>
+    {% if topics %}
+        <ul>
+            {% for topic in topics %}
+                <li style="margin-bottom: 15px;">
+                    <strong>{{ topic.title }}</strong><br>
+                    <em>Instrucción: {{ topic.instruction }}</em><br>
+
+                    <a href="/contacts/{{ contact.id }}/topics/{{ topic.id }}/edit">
+                        <button type="button">Editar</button>
+                    </a>
+
+                    <form action="/contacts/{{ contact.id }}/topics/{{ topic.id }}/delete" method="POST" style="display: inline; margin-top: 5px;">
+                        <button type="submit" style="color: red; font-size: 0.8em;" onclick="return confirm('¿Eliminar este tópico de la rutina?');">Eliminar</button>
+                    </form>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>Aún no has configurado preguntas. El bot solo conversará libremente.</p>
+    {% endif %}
+</div>
+{% endblock %}

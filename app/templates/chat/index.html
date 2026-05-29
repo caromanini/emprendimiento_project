@@ -1,41 +1,38 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simulador WhatsApp - CAMI</title>
-</head>
-<body style="font-family: sans-serif; background-color: #f0f2f5; padding: 20px;">
-    <div style="max-width: 600px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-        <h2>Simulador de WhatsApp: {{ contact.full_name }}</h2>
-        <p style="color: #666; font-size: 0.9em;"><em>Escribe como si fueras el adulto mayor para validar el comportamiento de la IA.</em></p>
-        <a href="/dashboard">← Volver al Dashboard</a>
-        <hr>
+{% extends "base.html" %}
 
-        <div style="border: 1px solid #ddd; height: 350px; overflow-y: scroll; padding: 15px; background-color: #efeae2; margin-bottom: 15px; border-radius: 4px;">
-            {% if messages %}
-                {% for msg in messages %}
-                    <div style="margin-bottom: 15px; text-align: {% if msg.role == 'user' %}right{% else %}left{% endif %};">
-                        <div style="display: inline-block; max-width: 75%; padding: 10px 14px; border-radius: 8px; text-align: left;
-                                    background-color: {% if msg.role == 'user' %}#dcf8c6{% else %}#ffffff{% endif %};
-                                    box-shadow: 0 1px 1px rgba(0,0,0,0.2);">
-                            <strong>{% if msg.role == 'user' %}👴 Abuelo{% else %}🤖 C.A.M.I.{% endif %}:</strong><br>
-                            <span style="white-space: pre-wrap;">{{ msg.content }}</span>
-                        </div>
+{% block title %}Simulador WhatsApp - CAMI{% endblock %}
+
+{% block body_class %}font-sans bg-[#f0f2f5] p-5{% endblock %}
+
+{% block content %}
+<div class="max-w-xl mx-auto bg-white p-5 rounded-lg shadow">
+    <h2>Simulador de WhatsApp: {{ contact.full_name }}</h2>
+    <p class="text-gray-500 text-sm"><em>Escribe como si fueras el adulto mayor para validar el comportamiento de la IA.</em></p>
+    <a href="/dashboard">← Volver al Dashboard</a>
+    <hr>
+
+    <div class="border border-gray-200 h-[350px] overflow-y-scroll p-4 bg-[#efeae2] mb-4 rounded">
+        {% if messages %}
+            {% for msg in messages %}
+                <div class="mb-4 {% if msg.role == 'user' %}text-right{% else %}text-left{% endif %}">
+                    <div class="inline-block max-w-[75%] px-[14px] py-[10px] rounded-lg text-left shadow-sm
+                                {% if msg.role == 'user' %}bg-[#dcf8c6]{% else %}bg-white{% endif %}">
+                        <strong>{% if msg.role == 'user' %}👴 Abuelo{% else %}🤖 C.A.M.I.{% endif %}:</strong><br>
+                        <span class="whitespace-pre-wrap">{{ msg.content }}</span>
                     </div>
-                {% endfor %}
-            {% else %}
-                <p style="text-align: center; color: #777; margin-top: 100px;"><em>No hay mensajes hoy. Envía un "Hola" para despertar a C.A.M.I.</em></p>
-            {% endif %}
-        </div>
-
-        <form action="/contacts/{{ contact.id }}/chat" method="POST" style="display: flex; gap: 10px;">
-            <input type="text" name="message" style="flex-grow: 1; padding: 12px; border: 1px solid #ccc; border-radius: 4px;" 
-                   placeholder="Escribe un mensaje aquí..." required autofocus autocomplete="off">
-            <button type="submit" style="padding: 12px 24px; background-color: #00a884; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer;">
-                Enviar
-            </button>
-        </form>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p class="text-center text-gray-500 mt-24"><em>No hay mensajes hoy. Envía un "Hola" para despertar a C.A.M.I.</em></p>
+        {% endif %}
     </div>
-</body>
-</html>
+
+    <form action="/contacts/{{ contact.id }}/chat" method="POST" class="flex gap-2.5">
+        <input type="text" name="message" class="flex-1 p-3 border border-gray-300 rounded"
+               placeholder="Escribe un mensaje aquí..." required autofocus autocomplete="off">
+        <button type="submit" class="px-6 py-3 bg-[#00a884] text-white border-none rounded font-bold cursor-pointer">
+            Enviar
+        </button>
+    </form>
+</div>
+{% endblock %}

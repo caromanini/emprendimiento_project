@@ -1,40 +1,36 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Editar Adulto Mayor - CAMI</title>
-</head>
-<body>
-    <div>
-        <h1>Editar Contacto</h1>
-        <hr>
-        
-        <form action="/contacts/{{ contact.id }}/edit" method="POST">
-            <div>
-                <label for="full_name">Nombre del adulto mayor:</label>
-                <input type="text" id="full_name" name="full_name" value="{{ contact.full_name }}" required>
-            </div>
-            <br>
-            <div>
-                <label for="phone_number">Número de WhatsApp:</label>
-                <span>+569</span>
-                <input
-                    type="text"
-                    id="phone_number"
-                    name="phone_number"
-                    value="{{ contact.phone_number[-8:] }}"
-                    pattern="\d{8}"
-                    maxlength="8"
-                    required
-                >
-            </div>
-            <br>
-            <button type="submit">Guardar Cambios</button>
-        </form>
-        
+{% extends "base.html" %}
+
+{% block title %}Editar Adulto Mayor - CAMI{% endblock %}
+
+{% block content %}
+<div>
+    <h1>Editar Contacto</h1>
+    <hr>
+
+    <form action="/contacts/{{ contact.id }}/edit" method="POST">
+        <div>
+            <label for="full_name">Nombre del adulto mayor:</label>
+            <input type="text" id="full_name" name="full_name" value="{{ contact.full_name }}" required>
+        </div>
         <br>
-        <a href="/dashboard">Volver al Dashboard</a>
-    </div>
-</body>
-</html>
+        <div>
+            <label for="phone_number">Número de WhatsApp:</label>
+            <span>+569</span>
+            <input
+                type="text"
+                id="phone_number"
+                name="phone_number"
+                value="{{ contact.phone_number[-8:] }}"
+                pattern="\d{8}"
+                maxlength="8"
+                required
+            >
+        </div>
+        <br>
+        <button type="submit">Guardar Cambios</button>
+    </form>
+
+    <br>
+    <a href="/dashboard">Volver al Dashboard</a>
+</div>
+{% endblock %}

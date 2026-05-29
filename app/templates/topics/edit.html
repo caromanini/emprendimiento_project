@@ -1,31 +1,27 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Editar Tópico - CAMI</title>
-</head>
-<body>
-    <div>
-        <h1>Editar Pregunta de la IA</h1>
-        <hr>
-        
-        <form action="/contacts/{{ contact_id }}/topics/{{ topic.id }}/edit" method="POST">
-            <div>
-                <label for="title">Título corto:</label><br>
-                <input type="text" id="title" name="title" value="{{ topic.title }}" required>
-            </div>
-            <br>
-            <div>
-                <label for="instruction">Instrucción para la IA:</label><br>
-                <textarea id="instruction" name="instruction" rows="3" cols="50" required>{{ topic.instruction }}</textarea>
-            </div>
-            <br>
-            <button type="submit">Guardar Cambios</button>
-        </form>
-        
+{% extends "base.html" %}
+
+{% block title %}Editar Tópico - CAMI{% endblock %}
+
+{% block content %}
+<div>
+    <h1>Editar Pregunta de la IA</h1>
+    <hr>
+
+    <form action="/contacts/{{ contact_id }}/topics/{{ topic.id }}/edit" method="POST">
+        <div>
+            <label for="title">Título corto:</label><br>
+            <input type="text" id="title" name="title" value="{{ topic.title }}" required>
+        </div>
         <br>
-        <a href="/contacts/{{ contact_id }}/topics">Volver a la configuración</a>
-    </div>
-</body>
-</html>
+        <div>
+            <label for="instruction">Instrucción para la IA:</label><br>
+            <textarea id="instruction" name="instruction" rows="3" cols="50" required>{{ topic.instruction }}</textarea>
+        </div>
+        <br>
+        <button type="submit">Guardar Cambios</button>
+    </form>
+
+    <br>
+    <a href="/contacts/{{ contact_id }}/topics">Volver a la configuración</a>
+</div>
+{% endblock %}

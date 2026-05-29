@@ -1,31 +1,26 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Historial de Reportes - CAMI</title>
-</head>
-<body>
-    <h1>Historial de Reportes</h1>
-    <h2>Paciente: {{ contact.full_name }}</h2>
-    
-    <a href="/dashboard">Volver al Dashboard</a>
-    
-    <hr>
+{% extends "base.html" %}
 
-    <h3>Reportes:</h3>
-    
-    {% if reports %}
-        <ul>
-            {% for report in reports %}
-                <li>
-                    <a href="/contacts/{{ contact.id }}/reports/{{ report.date }}">Reporte del día {{ report.date }}</a>
-                </li>
-            {% endfor %}
-        </ul>
-    {% else %}
-        <p>Aún no hay reportes generados para este paciente. El primer reporte se generará automáticamente a las 20:00 hrs.</p>
-    {% endif %}
+{% block title %}Historial de Reportes - CAMI{% endblock %}
 
-</body>
-</html>
+{% block content %}
+<h1>Historial de Reportes</h1>
+<h2>Paciente: {{ contact.full_name }}</h2>
+
+<a href="/dashboard">Volver al Dashboard</a>
+
+<hr>
+
+<h3>Reportes:</h3>
+
+{% if reports %}
+    <ul>
+        {% for report in reports %}
+            <li>
+                <a href="/contacts/{{ contact.id }}/reports/{{ report.date }}">Reporte del día {{ report.date }}</a>
+            </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>Aún no hay reportes generados para este paciente. El primer reporte se generará automáticamente a las 20:00 hrs.</p>
+{% endif %}
+{% endblock %}

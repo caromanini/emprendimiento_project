@@ -1,27 +1,22 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reporte {{ target_date }} - CAMI</title>
-</head>
-<body>
-    <h1>Reporte Diario de Salud</h1>
-    <h2>Paciente: {{ contact.full_name }}</h2>
-    <h3>Fecha del reporte: {{ target_date }}</h3>
-    
-    <a href="/contacts/{{ contact.id }}/reports">Volver al Historial</a>
-    <a href="/dashboard">Volver al Dashboard</a>
-    
-    <hr>
+{% extends "base.html" %}
 
-    <h3>Resumen Automatizado por C.A.M.I.</h3>
-    
-    {% if report %}
-        <p style="white-space: pre-wrap;">{{ report.content }}</p>
-    {% else %}
-        <p>No se encontró ningún reporte guardado para esta fecha.</p>
-    {% endif %}
+{% block title %}Reporte {{ target_date }} - CAMI{% endblock %}
 
-</body>
-</html>
+{% block content %}
+<h1>Reporte Diario de Salud</h1>
+<h2>Paciente: {{ contact.full_name }}</h2>
+<h3>Fecha del reporte: {{ target_date }}</h3>
+
+<a href="/contacts/{{ contact.id }}/reports">Volver al Historial</a>
+<a href="/dashboard">Volver al Dashboard</a>
+
+<hr>
+
+<h3>Resumen Automatizado por C.A.M.I.</h3>
+
+{% if report %}
+    <p style="white-space: pre-wrap;">{{ report.content }}</p>
+{% else %}
+    <p>No se encontró ningún reporte guardado para esta fecha.</p>
+{% endif %}
+{% endblock %}
