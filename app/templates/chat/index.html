@@ -1,71 +1,297 @@
 {% extends "base.html" %}
 
-{% block title %}Simulador Chat - CAMI{% endblock %}
+{% block title %}Chat - {{ contact.full_name }}{% endblock %}
 
 {% block content %}
-<main class="max-w-2xl mx-auto px-6 py-8">
+<main class="max-w-2xl mx-auto px-4 py-6">
 
-    <div class="mb-6">
+    <div class="mb-4">
         <a href="/dashboard" class="text-sm text-teal-700 hover:text-teal-500 font-medium transition-colors">
             ← Volver al Dashboard
         </a>
     </div>
 
-    <div class="mb-6">
-        <h1 class="text-3xl font-bold text-slate-800">Simular Chat</h1>
+    <div class="mb-5">
+        <h1 class="text-2xl font-bold text-slate-800">Chat</h1>
         <p class="text-slate-400 text-sm mt-1">
-            Conversando con <span class="font-semibold text-teal-700">{{ contact.full_name }}</span>
-            <span class="text-slate-300 mx-1">·</span>
-            <span class="text-xs">Escribe como si fueras el adulto mayor</span>
+            <span class="font-semibold text-teal-700">{{ contact.full_name }}</span>
+            <span class="text-slate-300 mx-1">·</span>{{ contact.phone_number }}
         </p>
     </div>
 
-    <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
-        <div class="h-[400px] overflow-y-auto p-5 bg-slate-50 space-y-4" id="chat-messages">
-            {% if messages %}
-                {% for msg in messages %}
-                <div class="flex {% if msg.role == 'user' %}justify-end{% else %}justify-start{% endif %}">
-                    <div class="max-w-[75%] px-4 py-3 rounded-2xl text-sm leading-relaxed shadow-sm
-                        {% if msg.role == 'user' %}
-                            bg-teal-700 text-white rounded-br-sm
-                        {% else %}
-                            bg-white border border-slate-100 text-slate-700 rounded-bl-sm
-                        {% endif %}">
-                        <p class="text-xs font-semibold mb-1 opacity-70">
-                            {% if msg.role == 'user' %}👴 Abuelo{% else %}🤖 C.A.M.I.{% endif %}
-                        </p>
-                        <span class="whitespace-pre-wrap">{{ msg.content }}</span>
-                    </div>
-                </div>
-                {% endfor %}
-            {% else %}
-            <div class="flex items-center justify-center h-full">
-                <p class="text-slate-400 text-sm text-center">
-                    No hay mensajes hoy.<br>
-                    <span class="text-slate-300 text-xs">Envía un "Hola" para despertar a C.A.M.I.</span>
-                </p>
+    <!-- Tabs -->
+    <div class="flex rounded-xl overflow-hidden border border-teal-700 mb-5 shadow-sm">
+        <button id="btn-whatsapp" onclick="switchTab('whatsapp')"
+            class="flex-1 py-2.5 text-sm font-semibold transition-colors bg-teal-700 text-white cursor-pointer">
+            💬 Conversación WhatsApp
+        </button>
+        <button id="btn-simulator" onclick="switchTab('simulator')"
+            class="flex-1 py-2.5 text-sm font-semibold transition-colors bg-white text-teal-700 cursor-pointer">
+            🧪 Probar Bot
+        </button>
+    </div>
+
+    <!-- ─── TAB 1: Historial WhatsApp ─────────────────────────────────── -->
+    <div id="tab-whatsapp">
+
+        <!-- Header estilo WhatsApp -->
+        <div class="bg-teal-800 rounded-t-2xl px-5 py-4 flex items-center gap-3 shadow">
+            <div class="w-10 h-10 rounded-full bg-teal-600 flex items-center justify-center text-white font-bold text-lg shrink-0">
+                {{ contact.full_name[0].upper() }}
             </div>
-            {% endif %}
+            <div>
+                <p class="text-white font-semibold text-sm leading-tight">{{ contact.full_name }}</p>
+                <p class="text-teal-300 text-xs">{{ contact.phone_number }}</p>
+            </div>
         </div>
 
-        <div class="border-t border-slate-100 p-4">
-            <form action="/contacts/{{ contact.id }}/chat" method="POST" class="flex gap-3">
-                <input type="text" name="message"
-                    placeholder="Escribe un mensaje..."
-                    required autofocus autocomplete="off"
-                    class="flex-1 border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-teal-400 focus:border-transparent transition">
-                <button type="submit"
-                    class="bg-teal-700 hover:bg-teal-600 text-white px-5 py-2.5 rounded-xl font-semibold text-sm transition-colors cursor-pointer">
-                    Enviar
-                </button>
-            </form>
+        <!-- Mensajes -->
+        <div id="wa-container" class="bg-[#e8ede9] overflow-y-auto px-4 py-3" style="height: 60vh;">
+
+            <div id="wa-sentinel" class="h-1"></div>
+
+            <div id="wa-loading" class="hidden flex justify-center py-2">
+                <span class="text-xs text-slate-500 bg-white/80 px-3 py-1 rounded-full shadow-sm animate-pulse">
+                    Cargando mensajes anteriores…
+                </span>
+            </div>
+
+            <div id="wa-messages" class="space-y-1">
+                {% if wa_messages %}
+                    {% set ns = namespace(last_date='') %}
+                    {% for msg in wa_messages %}
+                        {% set msg_date = msg.created_at.strftime('%Y-%m-%d') if msg.created_at else '' %}
+                        {% set msg_time = msg.created_at.strftime('%H:%M') if msg.created_at else '' %}
+                        {% if msg_date != ns.last_date %}
+                            {% set ns.last_date = msg_date %}
+                            <div class="flex justify-center my-3 date-separator" data-date="{{ msg_date }}">
+                                <span class="bg-white/80 text-slate-500 text-xs px-3 py-1 rounded-full shadow-sm">
+                                    {% if msg_date == today %}Hoy
+                                    {% elif msg_date == yesterday %}Ayer
+                                    {% else %}{{ msg.created_at.strftime('%-d de %B de %Y') if msg.created_at else '' }}{% endif %}
+                                </span>
+                            </div>
+                        {% endif %}
+                        <div class="flex {% if msg.role == 'user' %}justify-end{% else %}justify-start{% endif %} message-item"
+                             data-id="{{ msg.id }}" data-date="{{ msg_date }}">
+                            <div class="max-w-[78%] px-4 py-2.5 shadow-sm text-sm leading-relaxed
+                                {% if msg.role == 'user' %}bg-teal-700 text-white rounded-2xl rounded-br-sm
+                                {% else %}bg-white text-slate-700 rounded-2xl rounded-bl-sm border border-slate-100{% endif %}">
+                                <p class="text-xs font-semibold mb-1
+                                    {% if msg.role == 'user' %}text-teal-200{% else %}text-pink-400{% endif %}">
+                                    {% if msg.role == 'user' %}👴 {{ contact.full_name.split()[0] }}{% else %}🤖 C.A.M.I.{% endif %}
+                                </p>
+                                <span class="whitespace-pre-wrap break-words">{{ msg.content }}</span>
+                                <p class="text-xs mt-1.5 text-right
+                                    {% if msg.role == 'user' %}text-teal-300{% else %}text-slate-400{% endif %}">
+                                    {{ msg_time }}
+                                </p>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="flex items-center justify-center pt-20">
+                        <p class="text-slate-500 text-sm text-center bg-white/80 px-6 py-5 rounded-2xl shadow-sm">
+                            Aún no hay conversaciones de WhatsApp.<br>
+                            <span class="text-slate-400 text-xs mt-1 block">
+                                Cuando el abuelito converse con C.A.M.I. por WhatsApp,<br>los mensajes aparecerán aquí.
+                            </span>
+                        </p>
+                    </div>
+                {% endif %}
+            </div>
         </div>
+
+        <div class="bg-white rounded-b-2xl px-5 py-3 border-t border-slate-100 shadow">
+            <span class="text-xs text-slate-400">Solo lectura — historial real de conversación por WhatsApp</span>
+        </div>
+
+    </div>
+
+    <!-- ─── TAB 2: Simulador ──────────────────────────────────────────── -->
+    <div id="tab-simulator" class="hidden">
+
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+
+            <!-- Mensajes del simulador -->
+            <div id="sim-messages" class="overflow-y-auto p-5 bg-slate-50 space-y-4" style="height: 60vh;">
+                {% if sim_messages %}
+                    {% for msg in sim_messages %}
+                    <div class="flex {% if msg.role == 'user' %}justify-end{% else %}justify-start{% endif %}">
+                        <div class="max-w-[75%] px-4 py-3 rounded-2xl text-sm leading-relaxed shadow-sm
+                            {% if msg.role == 'user' %}bg-teal-700 text-white rounded-br-sm
+                            {% else %}bg-white border border-slate-100 text-slate-700 rounded-bl-sm{% endif %}">
+                            <p class="text-xs font-semibold mb-1 opacity-70">
+                                {% if msg.role == 'user' %}👴 Abuelo{% else %}🤖 C.A.M.I.{% endif %}
+                            </p>
+                            <span class="whitespace-pre-wrap">{{ msg.content }}</span>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="flex items-center justify-center h-full">
+                        <p class="text-slate-400 text-sm text-center">
+                            No hay mensajes de prueba hoy.<br>
+                            <span class="text-slate-300 text-xs">Escribe un mensaje para probar el bot.</span>
+                        </p>
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Input -->
+            <div class="border-t border-slate-100 p-4">
+                <p class="text-xs text-amber-600 bg-amber-50 px-3 py-2 rounded-lg mb-3 border border-amber-100">
+                    🧪 Modo prueba — estos mensajes <strong>no</strong> se envían por WhatsApp
+                </p>
+                <form action="/contacts/{{ contact.id }}/chat" method="POST" class="flex gap-3">
+                    <input type="text" name="message"
+                        placeholder="Escribe como si fueras el abuelito..."
+                        required autocomplete="off"
+                        class="flex-1 border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-teal-400 focus:border-transparent transition">
+                    <button type="submit"
+                        class="bg-teal-700 hover:bg-teal-600 text-white px-5 py-2.5 rounded-xl font-semibold text-sm transition-colors cursor-pointer">
+                        Enviar
+                    </button>
+                </form>
+            </div>
+        </div>
+
     </div>
 
 </main>
 
 <script>
-    const chatMessages = document.getElementById('chat-messages');
-    if (chatMessages) chatMessages.scrollTop = chatMessages.scrollHeight;
+    const ACTIVE   = 'flex-1 py-2.5 text-sm font-semibold transition-colors bg-teal-700 text-white cursor-pointer';
+    const INACTIVE = 'flex-1 py-2.5 text-sm font-semibold transition-colors bg-white text-teal-700 cursor-pointer';
+
+    function switchTab(tab) {
+        const isWA = tab === 'whatsapp';
+        document.getElementById('tab-whatsapp').classList.toggle('hidden', !isWA);
+        document.getElementById('tab-simulator').classList.toggle('hidden', isWA);
+        document.getElementById('btn-whatsapp').className = isWA ? ACTIVE : INACTIVE;
+        document.getElementById('btn-simulator').className = isWA ? INACTIVE : ACTIVE;
+    }
+
+    // Activar tab correcto según query param (el POST del simulador redirige con ?tab=simulator)
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('tab') === 'simulator') switchTab('simulator');
+
+    // ── Scroll inicial al fondo ───────────────────────────────────────────
+    const waContainer  = document.getElementById('wa-container');
+    const simMessages  = document.getElementById('sim-messages');
+    if (waContainer)  waContainer.scrollTop  = waContainer.scrollHeight;
+    if (simMessages)  simMessages.scrollTop  = simMessages.scrollHeight;
+
+    // ── Paginación WhatsApp ───────────────────────────────────────────────
+    const MONTHS = ['enero','febrero','marzo','abril','mayo','junio','julio',
+                    'agosto','septiembre','octubre','noviembre','diciembre'];
+
+    let waOldestId = {{ wa_oldest_id if wa_oldest_id else 'null' }};
+    let waHasMore  = {{ 'true' if wa_has_more else 'false' }};
+    let waLoading  = false;
+
+    function fmtDate(iso) {
+        const [y, m, d] = iso.split('-').map(Number);
+        const pad = n => String(n).padStart(2,'0');
+        const todayStr = new Date().toISOString().slice(0,10);
+        const yest = new Date(); yest.setDate(yest.getDate()-1);
+        const yestStr = yest.toISOString().slice(0,10);
+        if (iso === todayStr) return 'Hoy';
+        if (iso === yestStr)  return 'Ayer';
+        return `${d} de ${MONTHS[m-1]} de ${y}`;
+    }
+
+    function fmtTime(isoStr) {
+        if (!isoStr) return '';
+        return new Date(isoStr).toLocaleTimeString('es-CL', {hour:'2-digit', minute:'2-digit', hour12:false});
+    }
+
+    function escHtml(t) {
+        const el = document.createElement('div');
+        el.appendChild(document.createTextNode(t));
+        return el.innerHTML;
+    }
+
+    function hasSep(dateStr) {
+        return !!document.querySelector(`#wa-messages .date-separator[data-date="${dateStr}"]`);
+    }
+
+    function makeSep(dateStr) {
+        const d = document.createElement('div');
+        d.className = 'flex justify-center my-3 date-separator';
+        d.dataset.date = dateStr;
+        d.innerHTML = `<span class="bg-white/80 text-slate-500 text-xs px-3 py-1 rounded-full shadow-sm">${fmtDate(dateStr)}</span>`;
+        return d;
+    }
+
+    function makeMsg(msg) {
+        const isUser = msg.role === 'user';
+        const dateStr = msg.created_at ? msg.created_at.split('T')[0] : '';
+        const w = document.createElement('div');
+        w.className = `flex ${isUser ? 'justify-end' : 'justify-start'} message-item`;
+        w.dataset.id   = msg.id;
+        w.dataset.date = dateStr;
+        w.innerHTML = `
+            <div class="max-w-[78%] px-4 py-2.5 shadow-sm text-sm leading-relaxed
+                ${isUser ? 'bg-teal-700 text-white rounded-2xl rounded-br-sm'
+                         : 'bg-white text-slate-700 rounded-2xl rounded-bl-sm border border-slate-100'}">
+                <p class="text-xs font-semibold mb-1 ${isUser ? 'text-teal-200' : 'text-pink-400'}">
+                    ${isUser ? '👴 Abuelo' : '🤖 C.A.M.I.'}
+                </p>
+                <span class="whitespace-pre-wrap break-words">${escHtml(msg.content)}</span>
+                <p class="text-xs mt-1.5 text-right ${isUser ? 'text-teal-300' : 'text-slate-400'}">${fmtTime(msg.created_at)}</p>
+            </div>`;
+        return w;
+    }
+
+    async function loadMoreWA() {
+        if (!waHasMore || waLoading || !waOldestId) return;
+        waLoading = true;
+        document.getElementById('wa-loading').classList.remove('hidden');
+
+        try {
+            const res  = await fetch(`/contacts/{{ contact.id }}/history/messages?before_id=${waOldestId}`);
+            const data = await res.json();
+            if (!data.messages?.length) { waHasMore = false; return; }
+
+            const prevH   = waContainer.scrollHeight;
+            const prevTop = waContainer.scrollTop;
+            const waMessages = document.getElementById('wa-messages');
+            const anchor  = document.getElementById('wa-loading');
+            let lastDate  = null;
+
+            data.messages.forEach(msg => {
+                const d = msg.created_at ? msg.created_at.split('T')[0] : '';
+                if (d && d !== lastDate && !hasSep(d)) {
+                    anchor.insertAdjacentElement('afterend', makeSep(d));
+                }
+                lastDate = d;
+                const sep = document.querySelector(`#wa-messages .date-separator[data-date="${d}"]`);
+                const ref = sep || anchor;
+                ref.insertAdjacentElement('afterend', makeMsg(msg));
+            });
+
+            waContainer.scrollTop = waContainer.scrollHeight - prevH + prevTop;
+            waOldestId = data.oldest_id;
+            waHasMore  = data.has_more;
+            if (!waHasMore) document.getElementById('wa-sentinel').remove();
+
+        } catch(e) {
+            console.error('Error paginando historial:', e);
+        } finally {
+            waLoading = false;
+            document.getElementById('wa-loading').classList.add('hidden');
+        }
+    }
+
+    const waSentinel = document.getElementById('wa-sentinel');
+    if (waHasMore && waSentinel) {
+        new IntersectionObserver(
+            entries => { if (entries[0].isIntersecting) loadMoreWA(); },
+            { root: waContainer, threshold: 0.1 }
+        ).observe(waSentinel);
+    } else if (waSentinel) {
+        waSentinel.remove();
+    }
 </script>
 {% endblock %}

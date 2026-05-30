@@ -1,0 +1,234 @@
+{% extends "base.html" %}
+
+{% block title %}Historial de Chat - {{ contact.full_name }}{% endblock %}
+
+{% block body_class %}bg-slate-50 min-h-screen font-sans{% endblock %}
+
+{% block content %}
+<main class="max-w-2xl mx-auto px-4 py-6">
+
+    <div class="mb-4 flex items-center justify-between">
+        <a href="/dashboard" class="text-sm text-teal-700 hover:text-teal-500 font-medium transition-colors">
+            ← Volver al Dashboard
+        </a>
+        <span class="text-xs text-slate-400">Mostrando últimos mensajes</span>
+    </div>
+
+    <!-- Header estilo WhatsApp -->
+    <div class="bg-teal-800 rounded-t-2xl px-5 py-4 flex items-center gap-3 shadow">
+        <div class="w-10 h-10 rounded-full bg-teal-600 flex items-center justify-center text-white font-bold text-lg shrink-0">
+            {{ contact.full_name[0].upper() }}
+        </div>
+        <div>
+            <p class="text-white font-semibold text-sm leading-tight">{{ contact.full_name }}</p>
+            <p class="text-teal-300 text-xs">{{ contact.phone_number }}</p>
+        </div>
+    </div>
+
+    <!-- Área de mensajes -->
+    <div
+        id="chat-container"
+        class="bg-[#e8ede9] overflow-y-auto px-4 py-3 space-y-1"
+        style="height: 65vh;"
+    >
+        <!-- Sentinel: cuando aparece en pantalla carga mensajes anteriores -->
+        <div id="scroll-sentinel" class="h-1"></div>
+
+        <!-- Indicador de carga -->
+        <div id="loading-indicator" class="hidden flex justify-center py-2">
+            <span class="text-xs text-slate-500 bg-white/80 px-3 py-1 rounded-full shadow-sm animate-pulse">
+                Cargando mensajes anteriores…
+            </span>
+        </div>
+
+        <!-- Mensajes iniciales (últimos 20) renderizados por el servidor -->
+        {% if messages %}
+            {% set ns = namespace(last_date='') %}
+            {% for msg in messages %}
+                {% set msg_date = msg.created_at.strftime('%Y-%m-%d') if msg.created_at else '' %}
+                {% set msg_time = msg.created_at.strftime('%H:%M') if msg.created_at else '' %}
+                {% if msg_date != ns.last_date %}
+                    {% set ns.last_date = msg_date %}
+                    <div class="flex justify-center my-3 date-separator" data-date="{{ msg_date }}">
+                        <span class="bg-white/80 text-slate-500 text-xs px-3 py-1 rounded-full shadow-sm">
+                            {% if msg_date == today %}Hoy
+                            {% elif msg_date == yesterday %}Ayer
+                            {% else %}{{ msg.created_at.strftime('%-d de %B de %Y') if msg.created_at else '' }}{% endif %}
+                        </span>
+                    </div>
+                {% endif %}
+                <div class="flex {% if msg.role == 'user' %}justify-end{% else %}justify-start{% endif %} message-item"
+                     data-id="{{ msg.id }}" data-date="{{ msg_date }}">
+                    <div class="max-w-[78%] px-4 py-2.5 shadow-sm text-sm leading-relaxed
+                        {% if msg.role == 'user' %}bg-teal-700 text-white rounded-2xl rounded-br-sm
+                        {% else %}bg-white text-slate-700 rounded-2xl rounded-bl-sm border border-slate-100{% endif %}">
+                        <p class="text-xs font-semibold mb-1
+                            {% if msg.role == 'user' %}text-teal-200{% else %}text-pink-400{% endif %}">
+                            {% if msg.role == 'user' %}👴 {{ contact.full_name.split()[0] }}{% else %}🤖 C.A.M.I.{% endif %}
+                        </p>
+                        <span class="whitespace-pre-wrap break-words">{{ msg.content }}</span>
+                        <p class="text-xs mt-1.5 text-right
+                            {% if msg.role == 'user' %}text-teal-300{% else %}text-slate-400{% endif %}">
+                            {{ msg_time }}
+                        </p>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="flex items-center justify-center h-full pt-20">
+                <p class="text-slate-500 text-sm text-center bg-white/80 px-6 py-4 rounded-2xl shadow-sm">
+                    No hay mensajes registrados aún.<br>
+                    <span class="text-slate-400 text-xs">El historial aparecerá aquí cuando el abuelito converse con C.A.M.I.</span>
+                </p>
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Footer info -->
+    <div class="bg-white rounded-b-2xl px-5 py-3 border-t border-slate-100 shadow flex items-center justify-between">
+        <span class="text-xs text-slate-400">Solo lectura — historial completo de la conversación</span>
+        <a href="/contacts/{{ contact.id }}/chat"
+            class="text-xs text-teal-700 hover:text-teal-500 font-medium transition-colors">
+            Ir al simulador →
+        </a>
+    </div>
+
+</main>
+
+<script>
+    const chatContainer = document.getElementById('chat-container');
+    const loadingIndicator = document.getElementById('loading-indicator');
+    const sentinel = document.getElementById('scroll-sentinel');
+
+    let oldestId = {{ oldest_id if oldest_id else 'null' }};
+    let hasMore = {{ 'true' if has_more else 'false' }};
+    let loading = false;
+
+    const MONTHS = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+
+    function formatDate(isoDate) {
+        const [y, m, d] = isoDate.split('-').map(Number);
+        const today = new Date();
+        const todayStr = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
+        const yesterday = new Date(today); yesterday.setDate(today.getDate()-1);
+        const yestStr = `${yesterday.getFullYear()}-${String(yesterday.getMonth()+1).padStart(2,'0')}-${String(yesterday.getDate()).padStart(2,'0')}`;
+        if (isoDate === todayStr) return 'Hoy';
+        if (isoDate === yestStr) return 'Ayer';
+        return `${d} de ${MONTHS[m-1]} de ${y}`;
+    }
+
+    function formatTime(isoStr) {
+        if (!isoStr) return '';
+        const d = new Date(isoStr);
+        return d.toLocaleTimeString('es-CL', { hour: '2-digit', minute: '2-digit', hour12: false });
+    }
+
+    function escapeHtml(text) {
+        const el = document.createElement('div');
+        el.appendChild(document.createTextNode(text));
+        return el.innerHTML;
+    }
+
+    function needsDateSeparator(dateStr) {
+        return !chatContainer.querySelector(`.date-separator[data-date="${dateStr}"]`);
+    }
+
+    function createDateSeparator(dateStr) {
+        const div = document.createElement('div');
+        div.className = 'flex justify-center my-3 date-separator';
+        div.dataset.date = dateStr;
+        div.innerHTML = `<span class="bg-white/80 text-slate-500 text-xs px-3 py-1 rounded-full shadow-sm">${formatDate(dateStr)}</span>`;
+        return div;
+    }
+
+    function createMessageEl(msg) {
+        const isUser = msg.role === 'user';
+        const msgDate = msg.created_at ? msg.created_at.split('T')[0] : '';
+        const time = formatTime(msg.created_at);
+
+        const wrapper = document.createElement('div');
+        wrapper.className = `flex ${isUser ? 'justify-end' : 'justify-start'} message-item`;
+        wrapper.dataset.id = msg.id;
+        wrapper.dataset.date = msgDate;
+
+        wrapper.innerHTML = `
+            <div class="max-w-[78%] px-4 py-2.5 shadow-sm text-sm leading-relaxed
+                ${isUser
+                    ? 'bg-teal-700 text-white rounded-2xl rounded-br-sm'
+                    : 'bg-white text-slate-700 rounded-2xl rounded-bl-sm border border-slate-100'}">
+                <p class="text-xs font-semibold mb-1 ${isUser ? 'text-teal-200' : 'text-pink-400'}">
+                    ${isUser ? '👴 Abuelo' : '🤖 C.A.M.I.'}
+                </p>
+                <span class="whitespace-pre-wrap break-words">${escapeHtml(msg.content)}</span>
+                <p class="text-xs mt-1.5 text-right ${isUser ? 'text-teal-300' : 'text-slate-400'}">${time}</p>
+            </div>`;
+        return wrapper;
+    }
+
+    async function loadMore() {
+        if (!hasMore || loading || !oldestId) return;
+        loading = true;
+        loadingIndicator.classList.remove('hidden');
+
+        try {
+            const res = await fetch(`/contacts/{{ contact.id }}/history/messages?before_id=${oldestId}`);
+            if (!res.ok) return;
+            const data = await res.json();
+
+            if (!data.messages || data.messages.length === 0) {
+                hasMore = false;
+                sentinel.remove();
+                return;
+            }
+
+            const prevScrollHeight = chatContainer.scrollHeight;
+            const prevScrollTop = chatContainer.scrollTop;
+
+            // Insertar después del loading indicator
+            const insertAfter = loadingIndicator;
+            let lastDate = null;
+
+            data.messages.forEach(msg => {
+                const msgDate = msg.created_at ? msg.created_at.split('T')[0] : '';
+                if (msgDate && msgDate !== lastDate && needsDateSeparator(msgDate)) {
+                    insertAfter.insertAdjacentElement('afterend', createDateSeparator(msgDate));
+                    lastDate = msgDate;
+                } else {
+                    lastDate = msgDate;
+                }
+                // Insertar el mensaje después del separador o del loading
+                const lastInserted = chatContainer.querySelector(`.date-separator[data-date="${msgDate}"]`) || insertAfter;
+                lastInserted.insertAdjacentElement('afterend', createMessageEl(msg));
+            });
+
+            // Mantener posición del scroll (no saltar al usuario)
+            chatContainer.scrollTop = chatContainer.scrollHeight - prevScrollHeight + prevScrollTop;
+
+            oldestId = data.oldest_id;
+            hasMore = data.has_more;
+
+            if (!hasMore) sentinel.remove();
+
+        } catch (e) {
+            console.error('Error cargando mensajes:', e);
+        } finally {
+            loading = false;
+            loadingIndicator.classList.add('hidden');
+        }
+    }
+
+    // IntersectionObserver — dispara loadMore cuando el sentinel aparece en pantalla
+    if (hasMore && sentinel) {
+        const observer = new IntersectionObserver(
+            (entries) => { if (entries[0].isIntersecting) loadMore(); },
+            { root: chatContainer, threshold: 0.1 }
+        );
+        observer.observe(sentinel);
+    } else if (sentinel && !hasMore) {
+        sentinel.remove();
+    }
+
+    // Scroll al fondo al cargar (mensajes más recientes)
+    chatContainer.scrollTop = chatContainer.scrollHeight;
+</script>
+{% endblock %}

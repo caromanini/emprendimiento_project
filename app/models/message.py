@@ -8,8 +8,9 @@ class Message(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     contact_id = Column(Integer, ForeignKey("contacts.id"))
-    role = Column(String, index=True) 
-    content = Column(Text) 
+    role = Column(String, index=True)
+    content = Column(Text)
+    source = Column(String, nullable=False, server_default='simulator')
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
     contact = relationship("Contact", back_populates="messages")
