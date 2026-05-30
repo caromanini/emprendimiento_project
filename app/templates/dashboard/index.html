@@ -59,12 +59,12 @@
         {% if contacts %}
         <div class="space-y-3">
             {% for contact in contacts %}
-            <div class="bg-white rounded-xl border border-slate-100 border-l-4 border-l-teal-500 p-4 flex items-center justify-between gap-4">
+            <div class="bg-white rounded-xl border border-slate-100 border-l-4 border-l-teal-500 p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                 <div class="min-w-0">
                     <p class="font-semibold text-slate-800">{{ contact.full_name }}</p>
-                    <p class="text-xs text-slate-400 mt-0.5">+569 {{ contact.phone_number }}</p>
+                    <p class="text-xs text-slate-400 mt-0.5">{{ contact.phone_number }}</p>
                 </div>
-                <div class="flex items-center gap-2 flex-wrap justify-end shrink-0">
+                <div class="flex items-center gap-2 flex-wrap shrink-0">
                     <a href="/contacts/{{ contact.id }}/edit">
                         <button type="button"
                             class="border border-teal-700 text-teal-700 hover:bg-teal-50 px-3 py-1.5 rounded-xl font-medium text-xs transition-colors cursor-pointer">
