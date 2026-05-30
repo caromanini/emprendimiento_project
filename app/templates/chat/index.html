@@ -1,41 +1,71 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simulador WhatsApp - CAMI</title>
-</head>
-<body style="font-family: sans-serif; background-color: #f0f2f5; padding: 20px;">
-    <div style="max-width: 600px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-        <h2>Simulador de WhatsApp: {{ contact.full_name }}</h2>
-        <p style="color: #666; font-size: 0.9em;"><em>Escribe como si fueras el adulto mayor para validar el comportamiento de la IA.</em></p>
-        <a href="/dashboard">← Volver al Dashboard</a>
-        <hr>
+{% extends "base.html" %}
 
-        <div style="border: 1px solid #ddd; height: 350px; overflow-y: scroll; padding: 15px; background-color: #efeae2; margin-bottom: 15px; border-radius: 4px;">
+{% block title %}Simulador Chat - CAMI{% endblock %}
+
+{% block content %}
+<main class="max-w-2xl mx-auto px-6 py-8">
+
+    <div class="mb-6">
+        <a href="/dashboard" class="text-sm text-teal-700 hover:text-teal-500 font-medium transition-colors">
+            ← Volver al Dashboard
+        </a>
+    </div>
+
+    <div class="mb-6">
+        <h1 class="text-3xl font-bold text-slate-800">Simular Chat</h1>
+        <p class="text-slate-400 text-sm mt-1">
+            Conversando con <span class="font-semibold text-teal-700">{{ contact.full_name }}</span>
+            <span class="text-slate-300 mx-1">·</span>
+            <span class="text-xs">Escribe como si fueras el adulto mayor</span>
+        </p>
+    </div>
+
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+        <div class="h-[400px] overflow-y-auto p-5 bg-slate-50 space-y-4" id="chat-messages">
             {% if messages %}
                 {% for msg in messages %}
-                    <div style="margin-bottom: 15px; text-align: {% if msg.role == 'user' %}right{% else %}left{% endif %};">
-                        <div style="display: inline-block; max-width: 75%; padding: 10px 14px; border-radius: 8px; text-align: left;
-                                    background-color: {% if msg.role == 'user' %}#dcf8c6{% else %}#ffffff{% endif %};
-                                    box-shadow: 0 1px 1px rgba(0,0,0,0.2);">
-                            <strong>{% if msg.role == 'user' %}👴 Abuelo{% else %}🤖 C.A.M.I.{% endif %}:</strong><br>
-                            <span style="white-space: pre-wrap;">{{ msg.content }}</span>
-                        </div>
+                <div class="flex {% if msg.role == 'user' %}justify-end{% else %}justify-start{% endif %}">
+                    <div class="max-w-[75%] px-4 py-3 rounded-2xl text-sm leading-relaxed shadow-sm
+                        {% if msg.role == 'user' %}
+                            bg-teal-700 text-white rounded-br-sm
+                        {% else %}
+                            bg-white border border-slate-100 text-slate-700 rounded-bl-sm
+                        {% endif %}">
+                        <p class="text-xs font-semibold mb-1 opacity-70">
+                            {% if msg.role == 'user' %}👴 Abuelo{% else %}🤖 C.A.M.I.{% endif %}
+                        </p>
+                        <span class="whitespace-pre-wrap">{{ msg.content }}</span>
                     </div>
+                </div>
                 {% endfor %}
             {% else %}
-                <p style="text-align: center; color: #777; margin-top: 100px;"><em>No hay mensajes hoy. Envía un "Hola" para despertar a C.A.M.I.</em></p>
+            <div class="flex items-center justify-center h-full">
+                <p class="text-slate-400 text-sm text-center">
+                    No hay mensajes hoy.<br>
+                    <span class="text-slate-300 text-xs">Envía un "Hola" para despertar a C.A.M.I.</span>
+                </p>
+            </div>
             {% endif %}
         </div>
 
-        <form action="/contacts/{{ contact.id }}/chat" method="POST" style="display: flex; gap: 10px;">
-            <input type="text" name="message" style="flex-grow: 1; padding: 12px; border: 1px solid #ccc; border-radius: 4px;" 
-                   placeholder="Escribe un mensaje aquí..." required autofocus autocomplete="off">
-            <button type="submit" style="padding: 12px 24px; background-color: #00a884; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer;">
-                Enviar
-            </button>
-        </form>
+        <div class="border-t border-slate-100 p-4">
+            <form action="/contacts/{{ contact.id }}/chat" method="POST" class="flex gap-3">
+                <input type="text" name="message"
+                    placeholder="Escribe un mensaje..."
+                    required autofocus autocomplete="off"
+                    class="flex-1 border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-teal-400 focus:border-transparent transition">
+                <button type="submit"
+                    class="bg-teal-700 hover:bg-teal-600 text-white px-5 py-2.5 rounded-xl font-semibold text-sm transition-colors cursor-pointer">
+                    Enviar
+                </button>
+            </form>
+        </div>
     </div>
-</body>
-</html>
+
+</main>
+
+<script>
+    const chatMessages = document.getElementById('chat-messages');
+    if (chatMessages) chatMessages.scrollTop = chatMessages.scrollHeight;
+</script>
+{% endblock %}
