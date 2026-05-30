@@ -8,6 +8,7 @@ from app.schemas.user import UserCreate, UserLogin
 from app.services.user_service import create_user, get_user_by_email, authenticate_user
 from app.dependencies import get_db
 from app.core.security import create_access_token
+from app.core.config import COOKIE_SECURE
 
 router = APIRouter(prefix="/users", tags=["users"])
 templates =  Jinja2Templates(directory="app/templates")
@@ -71,7 +72,7 @@ def login_user(
         value=f"Bearer {access_token}",
         httponly=True,
         max_age=86400,
-        secure=False,
+        secure=COOKIE_SECURE,
         samesite="lax"
     )
 
