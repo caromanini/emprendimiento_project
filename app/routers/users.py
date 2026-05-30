@@ -71,7 +71,7 @@ def login_user(
         value=f"Bearer {access_token}",
         httponly=True,
         max_age=86400,
-        secure=True,
+        secure=False,
         samesite="lax"
     )
 
