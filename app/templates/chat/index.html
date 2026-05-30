@@ -1,38 +1,71 @@
 {% extends "base.html" %}
 
-{% block title %}Simulador WhatsApp - CAMI{% endblock %}
-
-{% block body_class %}font-sans bg-[#f0f2f5] p-5{% endblock %}
+{% block title %}Simulador Chat - CAMI{% endblock %}
 
 {% block content %}
-<div class="max-w-xl mx-auto bg-white p-5 rounded-lg shadow">
-    <h2>Simulador de WhatsApp: {{ contact.full_name }}</h2>
-    <p class="text-gray-500 text-sm"><em>Escribe como si fueras el adulto mayor para validar el comportamiento de la IA.</em></p>
-    <a href="/dashboard">← Volver al Dashboard</a>
-    <hr>
+<main class="max-w-2xl mx-auto px-6 py-8">
 
-    <div class="border border-gray-200 h-[350px] overflow-y-scroll p-4 bg-[#efeae2] mb-4 rounded">
-        {% if messages %}
-            {% for msg in messages %}
-                <div class="mb-4 {% if msg.role == 'user' %}text-right{% else %}text-left{% endif %}">
-                    <div class="inline-block max-w-[75%] px-[14px] py-[10px] rounded-lg text-left shadow-sm
-                                {% if msg.role == 'user' %}bg-[#dcf8c6]{% else %}bg-white{% endif %}">
-                        <strong>{% if msg.role == 'user' %}👴 Abuelo{% else %}🤖 C.A.M.I.{% endif %}:</strong><br>
+    <div class="mb-6">
+        <a href="/dashboard" class="text-sm text-teal-700 hover:text-teal-500 font-medium transition-colors">
+            ← Volver al Dashboard
+        </a>
+    </div>
+
+    <div class="mb-6">
+        <h1 class="text-3xl font-bold text-slate-800">Simular Chat</h1>
+        <p class="text-slate-400 text-sm mt-1">
+            Conversando con <span class="font-semibold text-teal-700">{{ contact.full_name }}</span>
+            <span class="text-slate-300 mx-1">·</span>
+            <span class="text-xs">Escribí como si fueras el adulto mayor</span>
+        </p>
+    </div>
+
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+        <div class="h-[400px] overflow-y-auto p-5 bg-slate-50 space-y-4" id="chat-messages">
+            {% if messages %}
+                {% for msg in messages %}
+                <div class="flex {% if msg.role == 'user' %}justify-end{% else %}justify-start{% endif %}">
+                    <div class="max-w-[75%] px-4 py-3 rounded-2xl text-sm leading-relaxed shadow-sm
+                        {% if msg.role == 'user' %}
+                            bg-teal-700 text-white rounded-br-sm
+                        {% else %}
+                            bg-white border border-slate-100 text-slate-700 rounded-bl-sm
+                        {% endif %}">
+                        <p class="text-xs font-semibold mb-1 opacity-70">
+                            {% if msg.role == 'user' %}👴 Abuelo{% else %}🤖 C.A.M.I.{% endif %}
+                        </p>
                         <span class="whitespace-pre-wrap">{{ msg.content }}</span>
                     </div>
                 </div>
-            {% endfor %}
-        {% else %}
-            <p class="text-center text-gray-500 mt-24"><em>No hay mensajes hoy. Envía un "Hola" para despertar a C.A.M.I.</em></p>
-        {% endif %}
+                {% endfor %}
+            {% else %}
+            <div class="flex items-center justify-center h-full">
+                <p class="text-slate-400 text-sm text-center">
+                    No hay mensajes hoy.<br>
+                    <span class="text-slate-300 text-xs">Enviá un "Hola" para despertar a C.A.M.I.</span>
+                </p>
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="border-t border-slate-100 p-4">
+            <form action="/contacts/{{ contact.id }}/chat" method="POST" class="flex gap-3">
+                <input type="text" name="message"
+                    placeholder="Escribe un mensaje..."
+                    required autofocus autocomplete="off"
+                    class="flex-1 border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-teal-400 focus:border-transparent transition">
+                <button type="submit"
+                    class="bg-teal-700 hover:bg-teal-600 text-white px-5 py-2.5 rounded-xl font-semibold text-sm transition-colors cursor-pointer">
+                    Enviar
+                </button>
+            </form>
+        </div>
     </div>
 
-    <form action="/contacts/{{ contact.id }}/chat" method="POST" class="flex gap-2.5">
-        <input type="text" name="message" class="flex-1 p-3 border border-gray-300 rounded"
-               placeholder="Escribe un mensaje aquí..." required autofocus autocomplete="off">
-        <button type="submit" class="px-6 py-3 bg-[#00a884] text-white border-none rounded font-bold cursor-pointer">
-            Enviar
-        </button>
-    </form>
-</div>
+</main>
+
+<script>
+    const chatMessages = document.getElementById('chat-messages');
+    if (chatMessages) chatMessages.scrollTop = chatMessages.scrollHeight;
+</script>
 {% endblock %}

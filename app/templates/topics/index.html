@@ -3,49 +3,83 @@
 {% block title %}Configurar IA - CAMI{% endblock %}
 
 {% block content %}
-<div>
-    <h1>Configuración del Bot</h1>
-    <h2>Adulto Mayor: {{ contact.full_name }}</h2>
-    <a href="/dashboard">← Volver al Dashboard</a>
-    <hr>
+<main class="max-w-4xl mx-auto px-6 py-8">
 
-    <h3>Agregar nueva pregunta/tópico</h3>
-    <form action="/contacts/{{ contact.id }}/topics" method="POST">
-        <div>
-            <label for="title">Título corto (Ej. "Pastillas"):</label><br>
-            <input type="text" id="title" name="title" required>
-        </div>
-        <br>
-        <div>
-            <label for="instruction">Instrucción para la IA:</label><br>
-            <textarea id="instruction" name="instruction" rows="3" cols="50" placeholder="Ej: Pregúntale si se tomó la pastilla azul para la presión de las 9:00 AM." required></textarea>
-        </div>
-        <br>
-        <button type="submit">Agregar a la rutina</button>
-    </form>
+    <div class="mb-6">
+        <a href="/dashboard" class="text-sm text-teal-700 hover:text-teal-500 font-medium transition-colors">
+            ← Volver al Dashboard
+        </a>
+    </div>
 
-    <hr>
+    <div class="mb-8">
+        <h1 class="text-3xl font-bold text-slate-800">Configuración del Bot</h1>
+        <p class="text-slate-400 text-sm mt-1">Adulto mayor: <span class="font-semibold text-teal-700">{{ contact.full_name }}</span></p>
+    </div>
 
-    <h3>Rutina Actual</h3>
-    {% if topics %}
-        <ul>
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 mb-8">
+        <h2 class="text-xl font-semibold text-slate-700 mb-5">Agregar nueva pregunta / tópico</h2>
+        <form action="/contacts/{{ contact.id }}/topics" method="POST" class="space-y-4">
+            <div>
+                <label for="title" class="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1">
+                    Título corto
+                </label>
+                <input type="text" id="title" name="title" required
+                    placeholder='Ej: "Pastillas"'
+                    class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-teal-400 focus:border-transparent transition">
+            </div>
+            <div>
+                <label for="instruction" class="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1">
+                    Instrucción para la IA
+                </label>
+                <textarea id="instruction" name="instruction" rows="3" required
+                    placeholder="Ej: Pregúntale si se tomó la pastilla azul para la presión de las 9:00 AM."
+                    class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-teal-400 focus:border-transparent transition resize-none"></textarea>
+            </div>
+            <div class="flex justify-end pt-1">
+                <button type="submit"
+                    class="bg-teal-700 hover:bg-teal-600 text-white px-5 py-2.5 rounded-xl font-semibold text-sm transition-colors cursor-pointer">
+                    Agregar a la rutina
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <div>
+        <h2 class="text-xl font-semibold text-slate-700 mb-4">Rutina Actual</h2>
+
+        {% if topics %}
+        <div class="space-y-3">
             {% for topic in topics %}
-                <li style="margin-bottom: 15px;">
-                    <strong>{{ topic.title }}</strong><br>
-                    <em>Instrucción: {{ topic.instruction }}</em><br>
-
+            <div class="bg-white rounded-xl border border-slate-100 border-l-4 border-l-teal-500 p-4 flex items-start justify-between gap-4">
+                <div class="min-w-0">
+                    <p class="font-semibold text-slate-800">{{ topic.title }}</p>
+                    <p class="text-xs text-slate-400 mt-1 leading-relaxed">{{ topic.instruction }}</p>
+                </div>
+                <div class="flex items-center gap-3 shrink-0">
                     <a href="/contacts/{{ contact.id }}/topics/{{ topic.id }}/edit">
-                        <button type="button">Editar</button>
+                        <button type="button"
+                            class="border border-teal-700 text-teal-700 hover:bg-teal-50 px-3 py-1.5 rounded-xl font-medium text-xs transition-colors cursor-pointer">
+                            Editar
+                        </button>
                     </a>
-
-                    <form action="/contacts/{{ contact.id }}/topics/{{ topic.id }}/delete" method="POST" style="display: inline; margin-top: 5px;">
-                        <button type="submit" style="color: red; font-size: 0.8em;" onclick="return confirm('¿Eliminar este tópico de la rutina?');">Eliminar</button>
+                    <form action="/contacts/{{ contact.id }}/topics/{{ topic.id }}/delete" method="POST" class="inline">
+                        <button type="submit"
+                            class="text-red-400 hover:text-red-600 text-xs font-medium underline cursor-pointer"
+                            onclick="return confirm('¿Eliminar este tópico de la rutina?');">
+                            Eliminar
+                        </button>
                     </form>
-                </li>
+                </div>
+            </div>
             {% endfor %}
-        </ul>
-    {% else %}
-        <p>Aún no has configurado preguntas. El bot solo conversará libremente.</p>
-    {% endif %}
-</div>
+        </div>
+        {% else %}
+        <div class="bg-white rounded-2xl border border-slate-100 p-12 text-center">
+            <p class="text-slate-400 text-sm">Aún no has configurado preguntas.</p>
+            <p class="text-slate-300 text-xs mt-1">El bot conversará libremente con el adulto mayor.</p>
+        </div>
+        {% endif %}
+    </div>
+
+</main>
 {% endblock %}
